@@ -13,6 +13,7 @@ const productValidation = (req, res, next) => {
       height: { type: "number", minimum: 0.1 },
       purchase_price: { type: "number", minimum: 0 },
       selling_price: { type: "number", minimum: 0 },
+      quantity: { type: "number", minimum: 1 },
       from: { type: "string", minLength: 2 },
       currency: { type: "string", enum: ["USD", "SUM"] },
     },
@@ -24,6 +25,7 @@ const productValidation = (req, res, next) => {
       "selling_price",
       "from",
       "currency",
+      "quantity"
     ],
     additionalProperties: false,
     errorMessage: {
@@ -35,6 +37,7 @@ const productValidation = (req, res, next) => {
         selling_price: "Sotish narxi kiritilishi kerak",
         from: "Kimdan kelgani kiritilishi kerak",
         currency: "Valyutani tanlash kerak",
+        quantity: "Soni kiritilishi kerak",
       },
       properties: {
         name: "Nomi kamida 2 harfdan iborat bo‘lishi kerak",
@@ -44,6 +47,7 @@ const productValidation = (req, res, next) => {
         selling_price: "Sotish narxi musbat son bo‘lishi kerak",
         from: "Kimdan kelgani kamida 2ta harf bo‘lishi kerak",
         currency: "Valyuta faqat USD yoki SUM bo‘lishi mumkin",
+        quantity: "Soni kamida 1 bo‘lishi kerak",
       },
     },
   };

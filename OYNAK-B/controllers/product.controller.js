@@ -11,6 +11,7 @@ const createProduct = async (req, res) => {
       selling_price,
       from,
       currency,
+      quantity
     } = req.body;
 
     const newProduct = new Product({
@@ -21,6 +22,9 @@ const createProduct = async (req, res) => {
       selling_price,
       from,
       currency,
+      quantity,
+      area: width * height * quantity,
+      unit_area: width * height,
     });
 
     await newProduct.save();

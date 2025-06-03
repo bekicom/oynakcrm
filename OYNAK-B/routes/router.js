@@ -59,12 +59,12 @@ router.get("/clients/debtors", clientController.getDebtorClients);
 
 // ✅ QARZLAR bilan bog‘liq qo‘shimcha marshrutlar
 router.post("/clients/:id/add-debt", clientController.addDebt); // qo‘lda qarz qo‘shish
-router.patch(
-  "/clients/:clientId/mark-paid/:debtIndex",
+router.put(
+  "/clients/:debtId/pay",
   clientController.markDebtAsPaid
 ); // qarzni to‘langan deb belgilash
-router.post(
-  "/clients/:clientId/partial-payment/:debtIndex",
+router.put(
+  "/clients/:debtId/pay-partial",
   clientController.addPartialPayment
 ); // qisman to‘lov
 

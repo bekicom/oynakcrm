@@ -15,35 +15,68 @@ const saleSchema = new mongoose.Schema(
     kv: {
       type: Number,
       required: [true, "Kvadrat maydon majburiy"],
-      min: [0.01, "Kvadrat maydon 0.01 dan katta bo‘lishi kerak"],
+      min: [0.01, "Kvadrat maydon 0.01 dan katta bo'lishi kerak"],
     },
     price: {
       type: Number,
       required: [true, "Narx majburiy"],
-      min: [0, "Narx manfiy bo‘lmasligi kerak"],
+      min: [0, "Narx manfiy bo'lmasligi kerak"],
+    },
+    extra_services: {
+      type: [{
+        service_amount: {
+          type: Number,
+          required: [true, "Qo'shimcha xizmat summasi majburiy"],
+          min: [1, "Qo'shimcha xizmat summasi manfiy bo'lmasligi kerak"],
+        },
+        service_amount_in_sale_currency: {
+          type: Number,
+          required: [true, "Qo'shimcha xizmat summasi majburiy"],
+          min: [1, "Qo'shimcha xizmat summasi manfiy bo'lmasligi kerak"],
+        },
+        service_name: {
+          type: String,
+          required: [true, "Qo'shimcha xizmat nomi majburiy"],
+        },
+      }],
+      default: [],
     },
     type: {
       type: String,
       enum: {
         values: ["naxt", "karta", "qarz"],
-        message: "To‘lov turi faqat 'naxt', 'karta' yoki 'qarz' bo‘lishi kerak",
+        message: "To'lov turi faqat 'naxt', 'karta' yoki 'qarz' bo'lishi kerak",
       },
-      required: [true, "To‘lov turi majburiy"],
+      required: [true, "To'lov turi majburiy"],
     },
     width: {
       type: Number,
       required: [true, "Eni majburiy"],
-      min: [0.01, "Eni 0.01 dan katta bo‘lishi kerak"],
+      min: [0.01, "Eni 0.01 dan katta bo'lishi kerak"],
     },
     height: {
       type: Number,
-      required: [true, "Bo‘yi majburiy"],
-      min: [0.01, "Bo‘yi 0.01 dan katta bo‘lishi kerak"],
+      required: [true, "Bo'yi majburiy"],
+      min: [0.01, "Bo'yi 0.01 dan katta bo'lishi kerak"],
     },
     profit: {
       type: Number,
       default: 0,
-      min: [0, "Foyda manfiy bo‘lmasligi kerak"],
+      min: [0, "Foyda manfiy bo'lmasligi kerak"],
+    },
+    payment_log: {
+      type: [{
+        date: {
+          type: Date,
+          default: Date.now,
+        },
+        amount: {
+          type: Number,
+          required: [true, "To'lov summasi majburiy"],
+          min: [0, "To'lov summasi manfiy bo'lmasligi kerak"],
+        }
+      }],
+      default: []
     },
     sold_at: {
       type: Date,
@@ -51,8 +84,8 @@ const saleSchema = new mongoose.Schema(
     },
     currency: {
       type: String,
-      enum: ["usd", "sum"],
-      default: "sum",
+      enum: ["USD", "SUM"],
+      default: "SUM",
     },
     paid_amount: {
       type: Number,
@@ -74,7 +107,10 @@ saleSchema.virtual("total").get(function () {
 
 // Virtual: qolgan qarz
 saleSchema.virtual("remaining").get(function () {
-  return (this.kv * this.price) - (this.paid_amount || 0);
+  return (this.kv * this.price + Number(this.extra_services.reduce(
+    (acc, item) => acc + item.service_amount_in_sale_currency,
+    0
+  ).toFixed())) - (this.paid_amount || 0);
 });
 
 // 🔐 OverwriteModelError'ni oldini olish

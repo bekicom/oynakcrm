@@ -17,6 +17,7 @@ const saleValidation = (req, res, next) => {
       profit: { type: "number", minimum: 0 }, // Foyda manfiy bo‘lmasligi kerak
       type: { type: "string", enum: ["naxt", "karta", "qarz"] },
       client_id: { type: "string", pattern: "^[0-9a-fA-F]{24}$" },
+      extra_services: { type: "array" }
     },
     required: [
       "product_id",
