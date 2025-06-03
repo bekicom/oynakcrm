@@ -1,0 +1,75 @@
+/* Global style */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f0f2f5;
+}
+
+body {
+  font-size: 16px;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+ input {
+  background: none;
+  transition-property: kj;
+ }
+
+.transparent-input {
+  background-color: transparent !important;
+  border: 1px solid #ccc;
+  color: #000;
+}
+.transparent-input:focus,
+.transparent-input:hover {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+/* login */
+.login-page {
+  height: 100vh;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.login-card {
+  backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 30px;
+  width: 400px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.8s ease;
+}
+
+.fade-in-up {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.transparent-input {
+  background-color: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+}
+
+.transparent-input input {
+  color: #fff;
+}
+
+
+::placeholder {
+  color: gray !important;
+}
