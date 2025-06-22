@@ -9,7 +9,7 @@ const app = express();
 // ✅ CORS middleware
 app.use(
   cors({
-    origin: "http://localhost:5173", // frontend domeni
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
