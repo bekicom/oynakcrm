@@ -52,12 +52,10 @@ const saleSchema = new mongoose.Schema(
     width: {
       type: Number,
       required: [true, "Eni majburiy"],
-      min: [0.01, "Eni 0.01 dan katta bo'lishi kerak"],
     },
     height: {
       type: Number,
       required: [true, "Bo'yi majburiy"],
-      min: [0.01, "Bo'yi 0.01 dan katta bo'lishi kerak"],
     },
     profit: {
       type: Number,

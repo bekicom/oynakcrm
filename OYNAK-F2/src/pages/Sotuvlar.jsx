@@ -1,5 +1,15 @@
 import { useEffect, useState } from "react";
-import { Table, Typography, Tag, Spin, Select, Space, DatePicker, Popover, Button } from "antd";
+import {
+  Table,
+  Typography,
+  Tag,
+  Spin,
+  Select,
+  Space,
+  DatePicker,
+  Popover,
+  Button,
+} from "antd";
 import { useGetSalesQuery } from "../features/api/sales.api";
 import { FaRegEye } from "react-icons/fa";
 import moment from "moment";
@@ -25,7 +35,7 @@ export default function Sotuvlar() {
         !startDate || !endDate
           ? true
           : moment(sale.sold_at).isSameOrAfter(startDate, "day") &&
-          moment(sale.sold_at).isSameOrBefore(endDate, "day");
+            moment(sale.sold_at).isSameOrBefore(endDate, "day");
       return matchType && matchDate;
     }) || [];
 
@@ -60,29 +70,32 @@ export default function Sotuvlar() {
       title: "Qo'shimcha xizmatlar",
       dataIndex: "extra_services",
       render: (text) => (
-        <Popover trigger='click' content={
-          <Table columns={
-            [
-              {
-                title: "Xizmat nomi",
-                dataIndex: "service_name",
-
-              },
-              {
-                title: "Narxi",
-                dataIndex: "service_amount",
-
-
-              }
-            ]
+        <Popover
+          trigger="click"
+          content={
+            <Table
+              columns={[
+                {
+                  title: "Xizmat nomi",
+                  dataIndex: "service_name",
+                },
+                {
+                  title: "Narxi",
+                  dataIndex: "service_amount",
+                  render: (amount) => `${amount.toLocaleString()} so'm`,
+                },
+              ]}
+              dataSource={text}
+              pagination={false}
+              rowKey="_id"
+            />
           }
-            dataSource={text} pagination={false} rowKey="_id" />
-        }>
+        >
           <Button type="primary">
             <FaRegEye />
           </Button>
         </Popover>
-      )
+      ),
     },
     {
       title: "📅 Sotilgan sana",
@@ -116,8 +129,28 @@ export default function Sotuvlar() {
             <Option value="karta">Karta</Option>
             <Option value="qarz">Qarz</Option>
           </Select>
-          <input style={{ border: "1px solid #ccc", height: "32px", paddingInline: "5px", borderRadius: "5px" }} type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-          <input style={{ border: "1px solid #ccc", height: "32px", paddingInline: "5px", borderRadius: "5px" }} type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+          <input
+            style={{
+              border: "1px solid #ccc",
+              height: "32px",
+              paddingInline: "5px",
+              borderRadius: "5px",
+            }}
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
+          <input
+            style={{
+              border: "1px solid #ccc",
+              height: "32px",
+              paddingInline: "5px",
+              borderRadius: "5px",
+            }}
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
         </Space>
         <Title level={5} style={{ margin: 0 }}>
           Umumiy summa: {umumiySumma.toLocaleString()} so'm

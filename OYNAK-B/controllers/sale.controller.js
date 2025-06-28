@@ -4,8 +4,17 @@ const { getUsdRate } = require("../utils/rate");
 // [POST] sotuv qilish
 const createSale = async (req, res) => {
   try {
-    const { type, client_id, product_id, price, kv, width, height, extra_services } = req.body;
-    const rate = await getUsdRate()
+    const {
+      type,
+      client_id,
+      product_id,
+      price,
+      kv,
+      width,
+      height,
+      extra_services,
+    } = req.body;
+    const rate = await getUsdRate();
     // 🔐 Har qanday holatda client_id bo‘lishi kerak
     if (!client_id) {
       return res.status(400).json({
@@ -26,10 +35,12 @@ const createSale = async (req, res) => {
     const purchase_price = product.purchase_price || 0;
     const profit = (price - purchase_price) * kv;
 
-    const convertedExtraServices = (extra_services || []).map(service => {
-      const amountInCurrency = product.currency === "USD"
-        ? service.service_amount / rate
-        : service.service_amount;
+    const convertedExtraServices = (extra_services || []).map((service) => {
+      const amountInCurrency =
+        product.currency === "USD"
+          ? service.service_amount / rate
+          : service.service_amount;
+      console.log(amountInCurrency);
 
       return {
         ...service,
@@ -48,11 +59,10 @@ const createSale = async (req, res) => {
       height,
       profit,
       currency: product.currency,
-      extra_services: convertedExtraServices
+      extra_services: convertedExtraServices,
     });
     product.area -= kv;
     await product.save();
-
 
     res.status(201).json({
       success: true,
