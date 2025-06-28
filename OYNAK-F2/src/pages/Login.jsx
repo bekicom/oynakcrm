@@ -38,7 +38,7 @@ const Login = () => {
       message.error(err?.data?.message || "Login xatoligi");
     }
   };
-  
+
 
   return (
     <div className="login-page">

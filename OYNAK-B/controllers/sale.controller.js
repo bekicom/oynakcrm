@@ -1,8 +1,6 @@
 const Sale = require("../models/sale.model");
-const Client = require("../models/client.model");
 const Product = require("../models/product.model");
 const { getUsdRate } = require("../utils/rate");
-const rateUrl = 'https://cbu.uz/uz/arkhiv-kursov-valyut/json/'
 // [POST] sotuv qilish
 const createSale = async (req, res) => {
   try {
