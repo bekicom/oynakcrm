@@ -27,12 +27,12 @@ const saleSchema = new mongoose.Schema(
         service_amount: {
           type: Number,
           required: [true, "Qo'shimcha xizmat summasi majburiy"],
-          min: [1, "Qo'shimcha xizmat summasi manfiy bo'lmasligi kerak"],
+          min: [0.1, "Qo'shimcha xizmat summasi manfiy bo'lmasligi kerak"],
         },
         service_amount_in_sale_currency: {
           type: Number,
           required: [true, "Qo'shimcha xizmat summasi majburiy"],
-          min: [1, "Qo'shimcha xizmat summasi manfiy bo'lmasligi kerak"],
+          min: [0.1, "Qo'shimcha xizmat summasi manfiy bo'lmasligi kerak"],
         },
         service_name: {
           type: String,

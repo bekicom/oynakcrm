@@ -40,7 +40,6 @@ const createSale = async (req, res) => {
         product.currency === "USD"
           ? service.service_amount / rate
           : service.service_amount;
-      console.log(amountInCurrency);
 
       return {
         ...service,

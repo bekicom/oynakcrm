@@ -70,7 +70,7 @@ export default function Kassa() {
   const [basket, setBasket] = useState([]);
   const [attachPrice, setAttachPrice] = useState(null);
   const [isBasket, setIsBasket] = useState(false);
-const [printItems, setPrintItems] = useState([]);
+  const [printItems, setPrintItems] = useState([]);
 
   const printRef = useRef(null);
 
@@ -100,6 +100,11 @@ const [printItems, setPrintItems] = useState([]);
       p.name.toLowerCase().includes(value.toLowerCase())
     );
     setSecondSelectedProduct(found || null);
+    if (found) {
+      form.setFieldsValue({
+        second_price: found.selling_price, // ✅ 2-qavat narxini inputga set qiladi
+      });
+    }
   };
 
   useEffect(() => {
@@ -196,6 +201,7 @@ const [printItems, setPrintItems] = useState([]);
           extra.push({
             service_name: "Yopishtirish xizmati",
             service_amount: glueAmount,
+            currency:"UZS"
           });
         }
 
@@ -214,15 +220,23 @@ const [printItems, setPrintItems] = useState([]);
         await createSale(firstBody).unwrap();
 
         if (hasSecondProduct && secondSelectedProduct) {
+          const secondPrice = parseFloat(
+            form.getFieldValue("second_price") ||
+              secondSelectedProduct.selling_price
+          );
+
           const secondBody = {
             product_id: secondSelectedProduct._id,
-            price: secondSelectedProduct.selling_price,
+            price: secondPrice,
             kv,
             type: paymentType,
             width,
             height,
             client_id: selectedClient?._id,
-            profit: 0,
+            profit:
+              (secondPrice -
+                (secondSelectedProduct?.purchasePrice?.value || 0)) *
+              kv,
             extra_services: [],
           };
           await createSale(secondBody).unwrap();
@@ -311,7 +325,6 @@ const [printItems, setPrintItems] = useState([]);
       message.error("Xatolik: " + (err?.data?.message || "Noma'lum xato"));
     }
   };
-  console.log(basket.length > 0);
 
   const handleLogout = () => {
     localStorage.clear();
@@ -326,7 +339,7 @@ const [printItems, setPrintItems] = useState([]);
         <div ref={printRef}>
           <PrintableReceipt
             client={selectedClient}
-           items={printItems}
+            items={printItems}
             extras={[
               ...extraServices,
               ...(hasSecondProduct && attachPrice
@@ -509,6 +522,11 @@ const [printItems, setPrintItems] = useState([]);
                     (p) => p.name === value
                   );
                   setSecondSelectedProduct(found || null);
+                  if (found) {
+                    form.setFieldsValue({
+                      second_price: found.selling_price, // ✅ 2-qavat narxini inputga set qiladi
+                    });
+                  }
                 }}
                 style={{ width: "100%" }}
                 placeholder="2-mahsulot nomi"
@@ -629,29 +647,63 @@ const [printItems, setPrintItems] = useState([]);
               </Col>
             </Row>
           )}
-          <Form.Item
-            name="price"
-            label="Sotish narxi"
-            rules={
-              basket.length > 0
-                ? []
-                : [
-                    { required: true, message: "Narx kiritilishi shart" },
-                    {
-                      type: "number",
-                      min: 1,
-                      message: "Narx 1 dan katta bo'lishi kerak",
-                    },
-                  ]
-            }
-          >
-            <InputNumber
-              disabled={hasSecondProduct}
-              onChange={(value) => setEnteredPrice(value)}
-              style={{ width: "100%" }}
-              min={1}
-            />
-          </Form.Item>
+          {!hasSecondProduct ? (
+            <Form.Item
+              name="price"
+              label="Sotish narxi"
+              rules={
+                basket.length > 0
+                  ? []
+                  : [
+                      { required: true, message: "Narx kiritilishi shart" },
+                      {
+                        type: "number",
+                        min: 1,
+                        message: "Narx 1 dan katta bo'lishi kerak",
+                      },
+                    ]
+              }
+            >
+              <InputNumber
+                onChange={(value) => setEnteredPrice(value)}
+                style={{ width: "100%" }}
+                min={1}
+              />
+            </Form.Item>
+          ) : (
+            <>
+              <Form.Item
+                name="price"
+                label={`1-qavat narxi (${
+                  selectedProduct?.name || "mahsulot"
+                }):`}
+                rules={[{ required: true, message: "1-qavat narxi majburiy" }]}
+              >
+                <InputNumber
+                  onChange={(value) => setEnteredPrice(value)}
+                  style={{ width: "100%" }}
+                  min={1}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="second_price"
+                label={`2-qavat narxi (${
+                  secondSelectedProduct?.name || "mahsulot"
+                }):`}
+                rules={[{ required: true, message: "2-qavat narxi majburiy" }]}
+              >
+                <InputNumber
+                  onChange={(value) => {
+                    // optional: setSecondPrice(value)
+                  }}
+                  style={{ width: "100%" }}
+                  min={1}
+                />
+              </Form.Item>
+            </>
+          )}
+
           {isBasket && (
             <Form.Item>
               <Button
