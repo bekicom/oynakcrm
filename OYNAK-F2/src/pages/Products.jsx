@@ -37,8 +37,8 @@ const Products = () => {
   const products = Array.isArray(data?.data)
     ? data?.data
     : Array.isArray(data?.products)
-      ? data.products
-      : [];
+    ? data.products
+    : [];
 
   const openModal = (record = null) => {
     setEditData(record);
@@ -88,8 +88,13 @@ const Products = () => {
     },
     { title: "Eni (m)", dataIndex: "width", align: "center" },
     { title: "Bo‘yi (m)", dataIndex: "height", align: "center" },
-    { title: "Jami kv.m", dataIndex: "area", align: "center" },
-    { title: "Miqdor", render: (_, record) => (record.area / (record.width * record.height)), align: "center" },
+    {
+      title: "Miqdor",
+      render: (_, record) =>
+        (record.area / (record.width * record.height))?.toFixed(2),
+      align: "center",
+    },
+    { title: "Jami kv.m", dataIndex: "area", align: "center",render:(text)=>text?.toFixed(2) },
     { title: "1 donasi kv.m", dataIndex: "unit_area", align: "center" },
     { title: "Kelish narxi", dataIndex: "purchase_price", align: "center" },
     { title: "Sotish narxi", dataIndex: "selling_price", align: "center" },
@@ -122,7 +127,6 @@ const Products = () => {
       ),
     },
   ];
-
 
   return (
     <div style={{ padding: 24 }}>

@@ -2,14 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Form, Input, Button, Typography, message, Card } from "antd";
 import { LockOutlined, UserOutlined, LoginOutlined } from "@ant-design/icons";
 import { useLoginMutation } from "../features/api/auth.service";
-import { useNavigate } from "react-router-dom";
-import "../index.css"; // 👉 animatsiyalar va stil uchun
+import "../index.css";
 
 const { Title } = Typography;
 
 const Login = () => {
   const [login, { isLoading }] = useLoginMutation();
-  const navigate = useNavigate();
   const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
@@ -28,17 +26,14 @@ const Login = () => {
       message.success("Xush kelibsiz!");
 
       if (role === "user") {
-        navigate("/kassa");
-        window.location.reload();
+        window.location.href = "/kassa";
       } else {
-        navigate("/dashboard");
-        window.location.reload();
+        window.location.href = "/dashboard";
       }
     } catch (err) {
       message.error(err?.data?.message || "Login xatoligi");
     }
   };
-
 
   return (
     <div className="login-page">

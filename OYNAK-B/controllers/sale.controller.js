@@ -1,7 +1,6 @@
 const Sale = require("../models/sale.model");
 const Product = require("../models/product.model");
 const { getUsdRate } = require("../utils/rate");
-// [POST] sotuv qilish
 const createSale = async (req, res) => {
   try {
     const {
@@ -13,9 +12,9 @@ const createSale = async (req, res) => {
       width,
       height,
       extra_services,
+      quantity,
     } = req.body;
     const rate = await getUsdRate();
-    // 🔐 Har qanday holatda client_id bo‘lishi kerak
     if (!client_id) {
       return res.status(400).json({
         success: false,
@@ -23,7 +22,6 @@ const createSale = async (req, res) => {
       });
     }
 
-    // ✅ Mahsulotdan xarid narxini olib foyda hisoblaymiz
     const product = await Product.findById(product_id);
     if (!product) {
       return res.status(404).json({
@@ -47,7 +45,6 @@ const createSale = async (req, res) => {
       };
     });
 
-    // Faqat sxemada ko‘zda tutilgan maydonlarni yuboramiz
     const sale = await Sale.create({
       type,
       client_id,
@@ -57,6 +54,7 @@ const createSale = async (req, res) => {
       width,
       height,
       profit,
+      quantity,
       currency: product.currency,
       extra_services: convertedExtraServices,
     });
@@ -77,7 +75,6 @@ const createSale = async (req, res) => {
   }
 };
 
-// Qolgan funksiyalar o‘zgarmagan holda qoladi
 const getSales = async (req, res) => {
   try {
     const sales = await Sale.find()
