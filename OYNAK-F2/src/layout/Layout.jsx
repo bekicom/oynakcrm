@@ -8,16 +8,16 @@ import {
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import {
-  DollarCircleOutlined, // 🆕 xarajat uchun ikonka
+  DollarCircleOutlined, 
 } from "@ant-design/icons";
 
 
 const { Sider, Content, Header } = Layout;
 
 const menuItems = [
-  { label: "Dashboard", key: "/dashboard", icon: <BarChartOutlined /> },
+  { label: "Dashboard", key: "/", icon: <BarChartOutlined /> },
   { label: "Mahsulotlar", key: "/products", icon: <AppstoreOutlined /> },
-  { label: "Klientlar", key: "/all-clients", icon: <TeamOutlined /> }, // 🆕 Yangi bo‘lim
+  { label: "Klientlar", key: "/all-clients", icon: <TeamOutlined /> },
   { label: "Sotuvlar", key: "/sotuvlar", icon: <BarChartOutlined /> },
   { label: "Xarajatlar", key: "/expenses", icon: <DollarCircleOutlined /> },
 ];
@@ -28,14 +28,12 @@ const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ✅ Token tekshirish
   useEffect(() => {
     if (!localStorage.getItem("token")) {
       navigate("/login");
     }
   }, [navigate]);
 
-  // ✅ Menu ustida bosilganda yo‘naltirish
   const onMenuClick = ({ key }) => {
     if (key === "logout") {
       localStorage.clear();

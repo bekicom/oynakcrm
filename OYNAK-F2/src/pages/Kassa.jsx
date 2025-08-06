@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import {
   Layout,
   Row,
@@ -42,13 +42,15 @@ const { Option } = Select;
 
 export default function Kassa() {
   const [form] = Form.useForm();
+  const [saleForm] = Form.useForm();
   const [clientForm] = Form.useForm();
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [searchValue, setSearchValue] = useState("");
   const [paymentType, setPaymentType] = useState("naxt");
   const [clientModal, setClientModal] = useState(false);
   const [clientSearch, setClientSearch] = useState("");
-  const [selectedClient, setSelectedClient] = useState(null);
+  const [selectedClient, setSelectedClient] = useState("");
+  const [selectedClientId, setSelectedClientId] = useState("");
 
   const [enteredWidth, setEnteredWidth] = useState(null);
   const [enteredHeight, setEnteredHeight] = useState(null);
@@ -76,6 +78,10 @@ export default function Kassa() {
   const [printItems, setPrintItems] = useState([]);
 
   const printRef = useRef(null);
+  console.log(basket.length > 0);
+
+  console.log(selectedProduct);
+  console.log(secondSelectedProduct);
 
   const handlePrint = () => {
     const printContents = printRef.current.innerHTML;
@@ -142,138 +148,145 @@ export default function Kassa() {
     }
   };
   const handleFinish = async (values) => {
-    if (paymentType === "qarz" && !selectedClient) {
-      return message.warning("Qarzga sotish uchun mijoz tanlanishi shart");
-    }
+    // if (paymentType === "qarz" && !selectedClient) {
+    //   return message.warning("Qarzga sotish uchun mijoz tanlanishi shart");
+    // }
 
     try {
-      if (hasSecondProduct && selectedProduct && secondSelectedProduct) {
-        const width1 = parseFloat(values.width || selectedProduct.width || 0);
-        const height1 = parseFloat(
-          values.height || selectedProduct.height || 0
-        );
-        const quantity1 = parseFloat(values.quantity || 1);
-        const kv1 = width1 * height1 * quantity1;
-        const price1 = parseFloat(
-          values.price || selectedProduct.selling_price || 0
-        );
-        const profit1 =
-          (price1 - (selectedProduct?.purchasePrice?.value || 0)) * kv1;
+      // if (hasSecondProduct && selectedProduct && secondSelectedProduct) {
+      //   const width1 = parseFloat(values.width || selectedProduct.width || 0);
+      //   const height1 = parseFloat(
+      //     values.height || selectedProduct.height || 0
+      //   );
+      //   const quantity1 = parseFloat(values.quantity || 1);
+      //   const kv1 = width1 * height1 * quantity1;
+      //   const price1 = parseFloat(
+      //     values.price || selectedProduct.selling_price || 0
+      //   );
+      //   const profit1 =
+      //     (price1 - (selectedProduct?.purchasePrice?.value || 0)) * kv1;
 
-        const width2 = parseFloat(
-          values.width || secondSelectedProduct.width || 0
-        );
-        const height2 = parseFloat(
-          values.height || secondSelectedProduct.height || 0
-        );
-        const quantity2 = 1;
-        const kv2 = width2 * height2 * quantity2;
-        const price2 = parseFloat(
-          values.second_price || secondSelectedProduct.selling_price || 0
-        );
-        const profit2 =
-          (price2 - (secondSelectedProduct?.purchasePrice?.value || 0)) * kv2;
+      //   const width2 = parseFloat(
+      //     values.width || secondSelectedProduct.width || 0
+      //   );
+      //   const height2 = parseFloat(
+      //     values.height || secondSelectedProduct.height || 0
+      //   );
+      //   const quantity2 = 1;
+      //   const kv2 = width2 * height2 * quantity2;
+      //   const price2 = parseFloat(
+      //     values.second_price || secondSelectedProduct.selling_price || 0
+      //   );
+      //   const profit2 =
+      //     (price2 - (secondSelectedProduct?.purchasePrice?.value || 0)) * kv2;
 
-        let extra = [...extraServices];
-        if (values.attach_price) {
-          extra.push({
-            service_name: "Yopishtirish xizmati",
-            service_amount: kv1 * values.attach_price,
-            currency: "UZS",
-          });
-        }
+      //   let extra = [...extraServices];
+      //   if (values.attach_price) {
+      //     extra.push({
+      //       service_name: "Yopishtirish xizmati",
+      //       service_amount: kv1 * values.attach_price,
+      //       currency: "UZS",
+      //     });
+      //   }
 
-        await createSale({
-          product_id: selectedProduct._id,
-          price: price1,
-          kv: kv1,
-          type: paymentType,
-          width: width1,
-          height: height1,
-          quantity: quantity1,
-          client_id: selectedClient?._id,
-          profit: profit1 < 0 ? 0 : profit1,
-          extra_services: extra,
-        }).unwrap();
+      //   await createSale({
+      //     product_id: selectedProduct._id,
+      //     price: price1,
+      //     kv: kv1,
+      //     type: paymentType,
+      //     width: width1,
+      //     height: height1,
+      //     quantity: quantity1,
+      //     client_id: selectedClient?._id,
+      //     profit: profit1 < 0 ? 0 : profit1,
+      //     extra_services: extra,
+      //   }).unwrap();
 
-        await createSale({
-          product_id: secondSelectedProduct._id,
-          price: price2,
-          kv: kv2,
-          type: paymentType,
-          width: width2,
-          height: height2,
-          quantity: null,
-          client_id: selectedClient?._id,
-          profit: profit2 < 0 ? 0 : profit2,
-          extra_services: [],
-        }).unwrap();
+      //   await createSale({
+      //     product_id: secondSelectedProduct._id,
+      //     price: price2,
+      //     kv: kv2,
+      //     type: paymentType,
+      //     width: width2,
+      //     height: height2,
+      //     quantity: null,
+      //     client_id: selectedClient?._id,
+      //     profit: profit2 < 0 ? 0 : profit2,
+      //     extra_services: [],
+      //   }).unwrap();
 
-        message.success("Mahsulotlar sotildi");
-        setPrintItems([
-          {
-            ...selectedProduct,
-            width: width1,
-            height: height1,
-            selling_price: price1,
-            quantity: quantity1,
-          },
-          {
-            ...secondSelectedProduct,
-            width: width2,
-            height: height2,
-            selling_price: price2,
-            quantity: null,
-          },
-        ]);
-      } else {
-        if (basket.length === 0) {
-          return message.warning("Savat bo'sh");
-        }
+      //   message.success("Mahsulotlar sotildi");
+      //   setPrintItems([
+      //     {
+      //       ...selectedProduct,
+      //       width: width1,
+      //       height: height1,
+      //       selling_price: price1,
+      //       quantity: quantity1,
+      //     },
+      //     {
+      //       ...secondSelectedProduct,
+      //       width: width2,
+      //       height: height2,
+      //       selling_price: price2,
+      //       quantity: null,
+      //     },
+      //   ]);
+      // } else {
+      //   if (basket.length === 0) {
+      //     return message.warning("Savat bo'sh");
+      //   }
 
-        const itemsToPrint = [];
+      //   const itemsToPrint = [];
 
-        basket.forEach(async (item, index) => {
-          const width = item.width || 0;
-          const height = item.height || 0;
-          const quantity = item.quantity || 1;
-          const kv = width * height * quantity;
-          const price = item.selling_price || 0;
-          const purchase_price = item?.purchasePrice?.value || 0;
-          const profit = (price - purchase_price) * kv;
+      //   basket.forEach(async (item, index) => {
+      //     const width = item.width || 0;
+      //     const height = item.height || 0;
+      //     const quantity = item.quantity || 1;
+      //     const kv = width * height * quantity;
+      //     const price = item.selling_price || 0;
+      //     const purchase_price = item?.purchasePrice?.value || 0;
+      //     const profit = (price - purchase_price) * kv;
 
-          const body = {
-            product_id: item._id,
-            price,
-            kv,
-            type: paymentType,
-            width,
-            height,
-            quantity,
-            client_id: selectedClient?._id,
-            profit: profit < 0 ? 0 : profit,
-            extra_services: index === 0 ? [...extraServices] : [],
-          };
+      //     const body = {
+      //       product_id: item._id,
+      //       price,
+      //       kv,
+      //       type: paymentType,
+      //       width,
+      //       height,
+      //       quantity,
+      //       client_id: selectedClient?._id,
+      //       profit: profit < 0 ? 0 : profit,
+      //       extra_services: index === 0 ? [...extraServices] : [],
+      //     };
 
-          await createSale(body).unwrap();
+      //     await createSale(body).unwrap();
 
-          itemsToPrint.push({
-            ...item,
-            width,
-            height,
-            quantity,
-            selling_price: price,
-          });
-        });
+      //     itemsToPrint.push({
+      //       ...item,
+      //       width,
+      //       height,
+      //       quantity,
+      //       selling_price: price,
+      //     });
+      //   });
 
-        message.success("Savatchadagi mahsulotlar sotildi");
-        setBasket([]);
-        setPrintItems(itemsToPrint);
-      }
+      //   message.success("Savatchadagi mahsulotlar sotildi");
+      //   setBasket([]);
+      //   setPrintItems(itemsToPrint);
+      // }
 
-      setTimeout(() => {
-        handlePrint();
-      }, 300);
+      // setTimeout(() => {
+      //   handlePrint();
+      // }, 300);
+      console.log(basket);
+      console.log(selectedClientId);
+      console.log(extraServices);
+      console.log(selectedProduct);
+      console.log(secondSelectedProduct);
+      console.log(attachPrice);
+      console.log(values);
     } catch (err) {
       message.error("Xatolik: " + (err?.data?.message || "Noma'lum xato"));
     }
@@ -470,21 +483,6 @@ export default function Kassa() {
               justifyContent: "space-between",
             }}
           >
-            {/* <Form.Item>
-              <Switch
-                checkedChildren="1+"
-                unCheckedChildren="Faqat 1 ta"
-                checked={isBasket}
-                onChange={(value) => {
-                  setIsBasket(value);
-                  if (value) {
-                    setHasSecondProduct(false);
-                    setSecondSelectedProduct(null);
-                    setSecondProductSearch("");
-                  }
-                }}
-              />
-            </Form.Item> */}
             <Form.Item>
               <Switch
                 disabled={isBasket}
@@ -494,22 +492,6 @@ export default function Kassa() {
                 onChange={setHasSecondProduct}
               />
             </Form.Item>
-            {/* <Switch
-              onChange={(checked) => {
-                setIsQuantity(checked);
-                if (checked) {
-                  setEnteredWidth(null);
-                  setEnteredHeight(null);
-                } else {
-                  setEnteredQuantity(null);
-                }
-              }}
-              value={isQuantity}
-              checkedChildren="Soni"
-              disabled={hasSecondProduct}
-              unCheckedChildren="Kvadrat"
-              style={{ marginBottom: 16 }}
-            /> */}
           </Space>
           <Form.Item label="Mahsulot qidirish">
             <AutoComplete
@@ -669,7 +651,6 @@ export default function Kassa() {
               </Form.Item>
             </Col>
           </Row>
-
           {!hasSecondProduct ? (
             <Form.Item
               name="price"
@@ -724,8 +705,6 @@ export default function Kassa() {
               </Form.Item>
             </>
           )}
-
-          {/* {isBasket && ( */}
           <Form.Item>
             <Button
               type="dashed"
@@ -755,7 +734,6 @@ export default function Kassa() {
               {editingIndex !== null ? "Saqlash" : "Qo'shish"}
             </Button>
           </Form.Item>
-          {/* )} */}
           {basket.length > 0 && (
             <Table
               title={() => "Tanlangan mahsulotlar"}
@@ -768,17 +746,53 @@ export default function Kassa() {
               pagination={false}
             />
           )}
-          <Form.Item label="To'lov turi">
-            <Select
-              defaultValue="naxt"
-              onChange={setPaymentType}
-              style={{ width: "100%" }}
+          <Form form={saleForm} onFinish={handleFinish} layout="vertical">
+            <Form.Item
+              label="To'lov turi"
+              name="payment_method"
+              rules={[{ required: true, message: "Majburiy" }]}
             >
-              <Option value="naxt">Naxt</Option>
-              <Option value="karta">Karta</Option>
-              <Option value="qarz">Qarz</Option>
-            </Select>
-          </Form.Item>
+              <Select style={{ width: "100%" }}>
+                <Option value="cash">Naqd</Option>
+                <Option value="card">Karta</Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="payment_amount"
+              label="To'lov miqdori"
+              rules={[{ required: true, message: "Majburiy" }]}
+            >
+              <InputNumber style={{ width: "100%" }} />
+            </Form.Item>
+            <Form.Item label="Mijoz tanlash yoki qo'shish" name="client_id">
+              <Row gutter={8}>
+                <Col span={20}>
+                  <AutoComplete
+                    options={
+                      clientData?.clients?.map((c) => ({
+                        value: c._id,
+                        label: `${c.name} - ${c.phone}`,
+                      })) || []
+                    }
+                    placeholder="Mijoz nomi yoki tel raqam"
+                    value={selectedClient}
+                    onSelect={(value, option) => {
+                      setSelectedClient(option.label);
+                      setSelectedClientId(option.value);
+                    }}
+                  />
+                </Col>
+                <Col span={4}>
+                  <Button
+                    icon={<PlusOutlined />}
+                    onClick={() => setClientModal(true)}
+                    block
+                  />
+                </Col>
+              </Row>
+            </Form.Item>
+          </Form>
+
           {hasSecondProduct && (
             <Form.Item
               label="1m³ uchun yopishtirish narxi"
@@ -865,32 +879,8 @@ export default function Kassa() {
               Qo'shimcha xizmat qo'shish
             </Button>
           </Form.Item>
-          <Form.Item label="Mijoz tanlash yoki qo'shish">
-            <Row gutter={8}>
-              <Col span={20}>
-                <AutoComplete
-                  value={clientSearch}
-                  onChange={handleClientSearch}
-                  options={
-                    clientData?.clients?.map((c) => ({
-                      value: `${c.name} - ${c.phone}`,
-                    })) || []
-                  }
-                  style={{ width: "100%" }}
-                  placeholder="Mijoz nomi yoki tel raqam"
-                  allowClear
-                />
-              </Col>
-              <Col span={4}>
-                <Button
-                  icon={<PlusOutlined />}
-                  onClick={() => setClientModal(true)}
-                  block
-                />
-              </Col>
-            </Row>
-          </Form.Item>
-          {(basket.length > 0 || hasSecondProduct) && (
+
+          {/* {(basket.length > 0 || hasSecondProduct) && (
             <Card size="small" style={{ marginBottom: 16 }}>
               <Statistic
                 title="Umumiy tovar summasi"
@@ -929,7 +919,7 @@ export default function Kassa() {
                 suffix="USD"
               />
             </Card>
-          )}
+          )} */}
           {(basket.length > 0 || hasSecondProduct) && (
             <Card size="small" style={{ marginBottom: 16 }}>
               <Statistic
@@ -951,19 +941,22 @@ export default function Kassa() {
                           selectedProduct,
                           secondSelectedProduct,
                         ];
-                        return products.reduce((acc, product) => {
-                          if (!product || product?.currency !== "SUM")
-                            return acc;
+                        console.log(products);
 
-                          const width = product?.width || 0;
-                          const height = product?.height || 0;
-                          const price = product?.selling_price || 0;
-                          const quantity = product?.quantity;
+                        return products
+                          .reduce((acc, product) => {
+                            if (!product || product?.currency !== "SUM")
+                              return acc;
 
-                          Number(
-                            acc + width * height * quantity * price
-                          ).toFixed(2);
-                        }, 0);
+                            const width = product?.width || 0;
+                            const height = product?.height || 0;
+                            const price = product?.selling_price || 0;
+                            const quantity = product?.quantity || 0;
+
+                            const total = width * height * quantity * price;
+                            return acc + total;
+                          }, 0)
+                          .toFixed(2); 
                       })()
                 }
                 suffix="UZS"
@@ -971,7 +964,12 @@ export default function Kassa() {
             </Card>
           )}
           <Form.Item>
-            <Button type="primary" htmlType="submit" block>
+            <Button
+              type="primary"
+              htmlType="button"
+              onClick={() => saleForm.submit()}
+              block
+            >
               Sotuvni amalga oshirish
             </Button>
           </Form.Item>

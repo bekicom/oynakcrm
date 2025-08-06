@@ -18,18 +18,11 @@ const Login = () => {
     try {
       const res = await login(values).unwrap();
 
-      const role = res.user.role;
-
       localStorage.setItem("token", res.token);
-      localStorage.setItem("user", role);
+      localStorage.setItem("user", res.user.role);
 
       message.success("Xush kelibsiz!");
-
-      if (role === "user") {
-        window.location.href = "/kassa";
-      } else {
-        window.location.href = "/dashboard";
-      }
+      window.location.href = "/";
     } catch (err) {
       message.error(err?.data?.message || "Login xatoligi");
     }

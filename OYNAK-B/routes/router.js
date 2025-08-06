@@ -73,7 +73,6 @@ router.post("/sales", saleValidation, saleController.createSale);
 router.get("/sales", saleController.getSales);
 router.put("/sales/:id", saleValidation, saleController.updateSale);
 router.delete("/sales/:id", saleController.deleteSale);
-router.get("/sales/history", saleController.getSalesHistory);
 
 // ======================= EXPENSE ROUTES =======================
 router.post("/expenses", expenseValidation, expenseController.createExpense);
